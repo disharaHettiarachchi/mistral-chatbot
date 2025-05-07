@@ -2,9 +2,8 @@ import streamlit as st
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 import torch
-import os
 
-# Get token from secrets
+# Load Hugging Face token securely from Streamlit secrets
 HF_TOKEN = st.secrets["HF_TOKEN"]
 
 st.set_page_config(page_title="Academic Research Chatbot", layout="centered")
@@ -15,13 +14,35 @@ def load_model():
     base_model = "mistralai/Mistral-7B-Instruct-v0.1"
     adapter_repo = "Dishara/mistral-finetuned-academic"
 
-    tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True, token=HF_TOKEN)
-    model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto", torch_dtype=torch.float16, token=HF_TOKEN)
-    model = PeftModel.from_pretrained(model, adapter_repo, adapter_name="default", token=HF_TOKEN)
+    # Load tokenizer (slow version to avoid tokenizer.model crash)
+    tokenizer = AutoTokenizer.from_pretrained(
+        base_model,
+        trust_remote_code=True,
+        use_fast=False,
+        token=HF_TOKEN
+    )
+
+    # Load base model
+    model = AutoModelForCausalLM.from_pretrained(
+        base_model,
+        device_map="auto",
+        torch_dtype=torch.float16,
+        token=HF_TOKEN
+    )
+
+    # Load LoRA adapter
+    model = PeftModel.from_pretrained(
+        model,
+        adapter_repo,
+        adapter_name="default",
+        token=HF_TOKEN
+    )
+
     return tokenizer, model
 
 tokenizer, model = load_model()
 
+# Chat interface
 user_input = st.text_area("Enter your academic question or abstract:")
 
 if st.button("Get Answer") and user_input:
