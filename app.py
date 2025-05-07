@@ -3,7 +3,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 import torch
 import os
-os.environ["HF_TOKEN"] = "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"
+os.environ["HF_TOKEN"] = "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"
 
 st.set_page_config(page_title="Academic Research Chatbot", layout="centered")
 st.title("📚 Academic Research Chatbot (Mistral + LoRA)")
