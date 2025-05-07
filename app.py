@@ -3,7 +3,9 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
 import torch
 import os
-os.environ["HF_TOKEN"] = "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"
+
+# Get token from secrets
+HF_TOKEN = st.secrets["HF_TOKEN"]
 
 st.set_page_config(page_title="Academic Research Chatbot", layout="centered")
 st.title("📚 Academic Research Chatbot (Mistral + LoRA)")
@@ -13,10 +15,9 @@ def load_model():
     base_model = "mistralai/Mistral-7B-Instruct-v0.1"
     adapter_repo = "Dishara/mistral-finetuned-academic"
 
-    tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
-    model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto", torch_dtype=torch.float16)
-    model = PeftModel.from_pretrained(model, adapter_repo, adapter_name="default")
-
+    tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True, token=HF_TOKEN)
+    model = AutoModelForCausalLM.from_pretrained(base_model, device_map="auto", torch_dtype=torch.float16, token=HF_TOKEN)
+    model = PeftModel.from_pretrained(model, adapter_repo, adapter_name="default", token=HF_TOKEN)
     return tokenizer, model
 
 tokenizer, model = load_model()
