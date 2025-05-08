@@ -12,7 +12,7 @@ def load_model():
     base_model = "mistralai/Mistral-7B-Instruct-v0.1"
     adapter_repo = "Dishara/mistral-finetuned-academic"
 
-    tokenizer = AutoTokenizer.from_pretrained(base_model)
+    tokenizer = AutoTokenizer.from_pretrained(base_model, use_fast=False)
     model = AutoModelForCausalLM.from_pretrained(
         base_model,
         torch_dtype=torch.float16,
