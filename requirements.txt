@@ -3,5 +3,5 @@ torch==2.2.2
 peft==0.8.2
 sentencepiece
 protobuf
-numpy
+numpy>=1.25.0,<2.0.0
 streamlit
